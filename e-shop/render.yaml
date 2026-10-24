@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: eshop-omar
+    runtime: node
+    plan: free
+    buildCommand: npm install --prefix backend
+    startCommand: npm start
+    envVars:
+      - key: ACCESS_SECRET
+        generateValue: true
+      - key: REFRESH_SECRET
+        generateValue: true

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Shop</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <a href="index.html" class="logo">E-Shop</a>
+
+            <nav class="nav">
+                <a href="#home">Home</a>
+                <a href="#products">Products</a>
+                <a href="#about">About Us</a>
+                <a href="#contact">Contact</a>
+            </nav>
+
+            <div class="header-actions">
+                <button type="button" class="btn btn-ghost btn-icon cart-btn" id="cartBtn" aria-label="Open cart">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    <span class="cart-count" id="cartCount" data-count="0">0</span>
+                </button>
+                <button type="button" class="btn btn-primary" data-open-login data-auth="guest">Login</button>
+                <span class="user-chip" data-auth="user" data-user-email hidden></span>
+                <a href="account.html" class="btn btn-ghost" data-auth="user" hidden>My Account</a>
+                <button type="button" class="btn btn-ghost" data-auth="user" data-logout hidden>Logout</button>
+                <button type="button" class="btn btn-ghost btn-icon menu-toggle" aria-label="Menu" aria-expanded="false">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Welcome Section -->
+        <section id="home" class="hero">
+            <div class="container">
+                <div>
+                    <h2>Welcome to E-Shop</h2>
+                    <p>
+                        Discover the latest products at great prices.
+                        Enjoy a simple and convenient shopping experience.
+                    </p>
+                    <a href="#products" class="btn btn-primary btn-lg">Explore Products</a>
+                </div>
+                <img src="images/hero.jpg" alt="Shopping bags">
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="section section-alt">
+            <div class="container">
+                <h2>Featured Products</h2>
+                <p class="section-sub">Hand-picked gadgets our customers love.</p>
+                <div class="products-container" id="productsGrid"></div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <h2>About Us</h2>
+                <p class="section-sub">
+                    E-Shop offers a variety of products
+                    to make your shopping experience easier.
+                </p>
+                <div class="about-grid">
+                    <div class="about-item">
+                        <h3>🚚 Fast delivery</h3>
+                        <p>Orders arrive in 2–4 days.</p>
+                    </div>
+                    <div class="about-item">
+                        <h3>🔒 Secure account</h3>
+                        <p>Your data is always protected.</p>
+                    </div>
+                    <div class="about-item">
+                        <h3>↩️ Easy returns</h3>
+                        <p>Return any item within 30 days.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="site-footer">
+        <div class="container">
+            <div>
+                <h3>Contact Us</h3>
+                <p>Email: <a href="mailto:support@eshop.com">support@eshop.com</a></p>
+            </div>
+            <p>&copy; <span data-year>2026</span> E-Shop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Login modal -->
+    <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="login-card">
+            <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
+
+            <h2 id="loginTitle">Login to Your Account</h2>
+            <p class="auth-sub">Welcome back! Please enter your details.</p>
+
+            <div id="loginAlert" class="alert" role="alert" hidden></div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input class="input" type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <input class="input" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        <button type="button" class="toggle-password" data-target="password" aria-label="Show password">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="checkbox" for="remember">
+                        <input type="checkbox" id="remember" name="remember">
+                        Remember Me
+                    </label>
+                    <a href="forgot-password.html">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
+            </form>
+
+            <p class="auth-footer">
+                Don't have an account?
+                <a href="register.html">Create Account</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Cart drawer -->
+    <aside class="drawer" id="cartDrawer" aria-label="Shopping cart">
+        <div class="drawer-head">
+            <h3>Your Cart</h3>
+            <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close cart">✕</button>
+        </div>
+        <div class="drawer-body" id="cartItems"></div>
+        <div class="drawer-foot">
+            <div class="cart-total"><span>Total</span><span id="cartTotal">$0</span></div>
+            <button type="button" class="btn btn-primary btn-block btn-lg" id="checkoutBtn">Checkout</button>
+        </div>
+    </aside>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

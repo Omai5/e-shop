@@ -1,0 +1,17 @@
+{
+  "name": "e-shop-backend",
+  "version": "1.0.0",
+  "description": "Auth API (register / login / me / refresh) + serves the frontend",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "author": "abdullah hatem",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

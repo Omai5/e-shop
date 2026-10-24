@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account · E-Shop</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="auth-page">
+
+    <header class="site-header">
+        <div class="container">
+            <a href="index.html" class="logo">E-Shop</a>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-ghost">← Back to shop</a>
+                <button type="button" class="btn btn-ghost" data-logout>Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-card account-card">
+            <div id="accountAlert" class="alert" role="alert" hidden></div>
+
+            <div id="loading" style="display:flex;align-items:center;gap:10px;color:var(--muted)">
+                <span class="spinner" style="border-color:var(--border);border-top-color:var(--primary)"></span>
+                Loading your account...
+            </div>
+
+            <div id="profile" hidden>
+                <div class="avatar" id="avatar"></div>
+                <h2>My Account</h2>
+                <p class="auth-sub">Your profile details, loaded securely from the server.</p>
+
+                <ul class="info-list">
+                    <li><span>Email</span><span id="profileEmail"></span></li>
+                    <li><span>Session expires</span><span id="profileExpires"></span></li>
+                    <li><span>Remembered on this device</span><span id="profileRemember"></span></li>
+                </ul>
+
+                <div class="actions-row">
+                    <a href="index.html#products" class="btn btn-primary">Continue Shopping</a>
+                    <button type="button" class="btn btn-ghost" id="refreshBtn">Refresh session</button>
+                    <button type="button" class="btn btn-ghost" data-logout>Logout</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script>
+        const alertBox = document.getElementById('accountAlert');
+
+        function tokenExpiry() {
+            try {
+                const token = Auth.get('accessToken');
+                const { exp } = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                return new Date(exp * 1000).toLocaleString();
+            } catch {
+                return '—';
+            }
+        }
+
+        async function loadProfile() {
+            if (!Auth.isLoggedIn()) {
+                location.href = 'index.html#login';
+                return;
+            }
+            try {
+                const { user } = await api.me();
+                document.getElementById('avatar').textContent = user.email[0].toUpperCase();
+                document.getElementById('profileEmail').textContent = user.email;
+                document.getElementById('profileExpires').textContent = tokenExpiry();
+                document.getElementById('profileRemember').textContent = localStorage.getItem('refreshToken') ? 'Yes' : 'No';
+                document.getElementById('profile').hidden = false;
+            } catch (err) {
+                if (err.status === 401) {
+                    showAlert(alertBox, 'Your session has expired. Redirecting to login...');
+                    setTimeout(() => (location.href = 'index.html#login'), 1500);
+                } else {
+                    showAlert(alertBox, err.message);
+                }
+            } finally {
+                document.getElementById('loading').hidden = true;
+            }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            setLoading(btn, true, 'Refreshing...');
+            try {
+                await refreshAccessToken();
+                document.getElementById('profileExpires').textContent = tokenExpiry();
+                toast('Session refreshed');
+            } catch (err) {
+                showAlert(alertBox, err.message);
+            } finally {
+                setLoading(btn, false);
+            }
+        });
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account · E-Shop</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="auth-page">
+
+    <header class="site-header">
+        <div class="container">
+            <a href="index.html" class="logo">E-Shop</a>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-ghost">← Back to shop</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-card">
+            <h2>Create Account</h2>
+            <p class="auth-sub">Join E-Shop and start shopping in seconds.</p>
+
+            <div id="registerAlert" class="alert" role="alert" hidden></div>
+
+            <form id="registerForm" novalidate>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input class="input" type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                    <div class="field-error" data-error="email"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <input class="input" type="password" id="password" name="password" placeholder="At least 6 characters" autocomplete="new-password" required>
+                        <button type="button" class="toggle-password" data-target="password" aria-label="Show password">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <div class="strength" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+                    <div class="strength-label" id="strengthLabel"></div>
+                    <div class="field-error" data-error="password"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm">Confirm Password</label>
+                    <div class="input-wrap">
+                        <input class="input" type="password" id="confirm" name="confirm" placeholder="Repeat your password" autocomplete="new-password" required>
+                        <button type="button" class="toggle-password" data-target="confirm" aria-label="Show password">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <div class="field-error" data-error="confirm"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox" for="terms">
+                        <input type="checkbox" id="terms" name="terms">
+                        I agree to the Terms &amp; Privacy Policy
+                    </label>
+                    <div class="field-error" data-error="terms"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+            </form>
+
+            <p class="auth-footer">
+                Already have an account?
+                <a href="index.html#login">Login</a>
+            </p>
+        </div>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script>
+        const form = document.getElementById('registerForm');
+        const alertBox = document.getElementById('registerAlert');
+        const btn = form.querySelector('button[type="submit"]');
+        const bars = document.querySelectorAll('.strength span');
+        const strengthLabel = document.getElementById('strengthLabel');
+
+        function setError(name, message) {
+            form.querySelector(`[data-error="${name}"]`).textContent = message || '';
+            form[name].classList.toggle('invalid', Boolean(message));
+        }
+
+        function passwordScore(pw) {
+            let score = 0;
+            if (pw.length >= 6) score++;
+            if (pw.length >= 10) score++;
+            if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+            if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++;
+            return score;
+        }
+
+        form.password.addEventListener('input', () => {
+            const pw = form.password.value;
+            const score = pw ? Math.max(1, passwordScore(pw)) : 0;
+            const colors = ['', 'var(--danger)', '#f59e0b', '#22c55e', 'var(--success)'];
+            const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+            bars.forEach((bar, i) => (bar.style.background = i < score ? colors[score] : ''));
+            strengthLabel.textContent = labels[score];
+        });
+
+        function validate() {
+            const email = form.email.value.trim();
+            const password = form.password.value;
+            let ok = true;
+
+            setError('email', EMAIL_REGEX.test(email) ? '' : 'Please enter a valid email address.');
+            setError('password', password.length >= 6 ? '' : 'Password must be at least 6 characters.');
+            setError('confirm', form.confirm.value === password && password ? '' : 'Passwords do not match.');
+            setError('terms', form.terms.checked ? '' : 'You must accept the terms.');
+
+            form.querySelectorAll('.field-error').forEach((el) => { if (el.textContent) ok = false; });
+            return ok;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert(alertBox);
+            if (!validate()) return;
+
+            setLoading(btn, true, 'Creating account...');
+            try {
+                const { email } = await api.register(form.email.value.trim(), form.password.value);
+                showAlert(alertBox, 'Account created! Redirecting to login...', 'success');
+                setTimeout(() => {
+                    location.href = `index.html?registered=${encodeURIComponent(email)}#login`;
+                }, 1000);
+            } catch (err) {
+                showAlert(alertBox, err.message);
+                setLoading(btn, false);
+            }
+        });
+    </script>
+</body>
+
+</html>
