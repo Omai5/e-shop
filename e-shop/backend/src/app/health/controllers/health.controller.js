@@ -1,6 +1,12 @@
-const {getDBStatus} = require('../../../config/db');
+const {connectDB, getDBStatus} = require('../../../config/db');
 
 // Quick deployment check: shows where users are stored and whether MongoDB is connected
-exports.getHealth = (req, res) => {
-    res.json(getDBStatus());
+exports.getHealth = async (req, res) => {
+    try {
+        await connectDB();
+        res.json(getDBStatus());
+    }
+    catch (error) {
+        res.status(503).json({...getDBStatus(), error: error.message});
+    }
 }

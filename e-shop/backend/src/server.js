@@ -1,6 +1,6 @@
 const express = require('express')
 const path = require('path')
-const {connectDB} = require('./config/db')
+const requireDB = require('./middlewares/requireDB')
 const userRoutes = require('./app/user/routes')
 const healthRoutes = require('./app/health/routes')
 const app = express()
@@ -16,14 +16,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/users', userRoutes);
+app.use('/users', requireDB, userRoutes);
 app.use('/health', healthRoutes);
 
 // Frontend: serves everything inside login_page/frontend
 const FRONTEND_DIR = path.join(__dirname, '..', '..', 'frontend');
 app.use(express.static(FRONTEND_DIR));
-
-connectDB()
 
 app.listen(port, () => {console.log(`Server started on http://localhost:${port}`)})
 

@@ -2,15 +2,21 @@ const mongoose = require('mongoose');
 
 const STATES = ['disconnected', 'connected', 'connecting', 'disconnecting'];
 
-// Mongoose queues queries until the connection is ready, so the server doesn't need to wait for it
+// Reused across requests; reset on failure so the next request retries (Vercel reuses warm instances)
+let connection = null;
+
 exports.connectDB = () => {
-    if (!process.env.MONGODB_URI) {
-        console.warn('MONGODB_URI is not set: users are kept in memory and will be lost when the server restarts')
-        return
+    if (!process.env.MONGODB_URI) return Promise.resolve()
+    if (!connection) {
+        connection = mongoose.connect(process.env.MONGODB_URI, {serverSelectionTimeoutMS: 5000})
+            .then(() => console.log('Connected to MongoDB'))
+            .catch((error) => {
+                connection = null
+                console.error('MongoDB connection failed:', error.message)
+                throw error
+            })
     }
-    mongoose.connect(process.env.MONGODB_URI)
-        .then(() => console.log('Connected to MongoDB'))
-        .catch((error) => console.error('MongoDB connection failed:', error.message))
+    return connection
 }
 
 exports.getDBStatus = () => ({
