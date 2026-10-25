@@ -12,7 +12,7 @@ exports.register = async (email, password) => {
     if (!EMAIL_REGEX.test(email)) throw new Error('Please enter a valid email');
     if (typeof password !== 'string' || password.length < 6) throw new Error('Password must be at least 6 characters');
 
-    const exists = userRepo.findByEmail(email);
+    const exists = await userRepo.findByEmail(email);
     if (exists) throw new Error('User already exists');
 
     const hashedPassword = await hashPassword(password);
@@ -21,7 +21,7 @@ exports.register = async (email, password) => {
 
 // 2. login user
 exports.login = async (email, password) => {
-    const user = userRepo.findByEmail(normalizeEmail(email));
+    const user = await userRepo.findByEmail(normalizeEmail(email));
     if (!user || typeof password !== 'string') throw new Error('Invalid Credentials');
 
     const isCorrectPassword = await comparePassword(password, user.password);
