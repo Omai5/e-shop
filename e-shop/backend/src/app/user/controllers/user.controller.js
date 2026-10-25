@@ -18,7 +18,9 @@ exports.login = async(req, res) => {
         res.status(200).json({accessToken, refreshToken});
     }
     catch (error) {
-        res.status(401).json({message: error.message});
+        // Only wrong credentials are a 401; anything else (e.g. database down) is a server error
+        const status = error.message === 'Invalid Credentials' ? 401 : 500;
+        res.status(status).json({message: error.message});
     }
 }
 
